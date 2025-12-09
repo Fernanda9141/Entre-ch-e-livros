@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Entre Chá e Livros</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Fontes com cara de livro antigo -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- PWA -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1b1510">
+
+<!-- Ícone para abas / favoritos (pode usar a mesma logo) -->
+<link rel="icon" type="image/png" href="logo-entre-cha-e-livros.png">
+
+  <style>
+    :root {
+      /* Paleta biblioteca antiga */
+      --bg-deep: #1e1812;
+      --bg-deep-alt: #261d16;
+      --paper: #f4ebd7;
+      --paper-alt: #e8dcc4;
+      --card: rgba(244, 235, 215, 0.98);
+      --ink: #2d2118;
+      --ink-soft: #6d5b48;
+      --accent: #b18a57;      /* dourado envelhecido */
+      --accent-dark: #8a673c;
+      --accent-soft: #d4b98a;
+      --leaf: #657b60;        /* verde musgo */
+      --border-soft: #c4b291;
+      --danger: #a5564f;
+      --shadow-strong: 0 24px 55px rgba(0, 0, 0, 0.8);
+      --shadow-soft: 0 14px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 18px;
+      background:
+        radial-gradient(circle at top, #3a2b1f 0, #1b1510 45%, #0f0b08 100%);
+      color: var(--ink);
+      font-family: "Cormorant Garamond", "Times New Roman", serif;
+    }
+
+    .page-shell {
+      width: 100%;
+      max-width: 1220px;
+      max-height: 820px;
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 0;
+      border-radius: 20px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #2b2119, #21170f);
+      box-shadow: var(--shadow-strong);
+      border: 1px solid #4e3a27;
+    }
+
+    /* ===================== SIDEBAR ===================== */
+
+    .library-sidebar {
+      background:
+        radial-gradient(circle at top, #3a2a1e 0, #21170f 55%, #140e09 100%);
+      border-right: 1px solid #3c2a1c;
+      padding: 18px 18px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .sidebar-top {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .brand-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      text-align: center;
+    }
+
+    .brand-logo-wrap {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      padding: 5px;
+      background: radial-gradient(circle at top, #f7f0e1 0, #b89466 55%, #4f3620 100%);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-logo-wrap img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: contain;
+      background: #f4ebd7;
+    }
+
+    .brand-name {
+      font-family: "Playfair Display", serif;
+      font-size: 1.2rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #f7f0e3;
+    }
+
+    .brand-sub {
+      font-size: 0.8rem;
+      color: #c9bba3;
+    }
+
+    .sidebar-divider {
+      margin: 8px 0 4px;
+      height: 1px;
+      background: linear-gradient(
+        to right,
+        transparent,
+        rgba(199, 173, 129, 0.9),
+        transparent
+      );
+    }
+
+    .sidebar-section-title {
+      font-size: 0.9rem;
+      color: #e8dcc4;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.9rem;
+      color: #d8c8aa;
+    }
+
+    .nav-item {
+      padding: 6px 9px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: radial-gradient(circle at left, #3c2b1e 0, transparent 70%);
+      border: 1px solid rgba(123, 96, 65, 0.55);
+    }
+
+    .nav-item span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-item .nav-pill {
+      font-size: 0.75rem;
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(199, 173, 129, 0.7);
+      color: #ead8b4;
+      background: rgba(28, 20, 13, 0.6);
+    }
+
+    .sidebar-bottom {
+      font-size: 0.8rem;
+      color: #bda986;
+      border-top: 1px dashed rgba(130, 105, 71, 0.7);
+      padding-top: 10px;
+    }
+
+    .sidebar-bottom strong {
+      font-weight: 600;
+      color: #e8dcc4;
+    }
+
+    /* ===================== MAIN PANEL ===================== */
+
+    .main-panel {
+      background:
+        radial-gradient(circle at top, #594532 0, #3b2c21 40%, #2a1f17 100%);
+      padding: 14px 18px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .main-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      color: #f7f0e3;
+    }
+
+    .main-top-text {
+      max-width: 430px;
+    }
+
+    .page-tagline {
+      font-size: 0.82rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-soft);
+      margin-bottom: 4px;
+    }
+
+    .page-title {
+      font-family: "Playfair Display", serif;
+      font-size: 1.7rem;
+      line-height: 1.2;
+      margin-bottom: 4px;
+    }
+
+    .page-title span {
+      color: var(--accent-soft);
+    }
+
+    .page-subtitle {
+      font-size: 0.9rem;
+      color: #e3d6c2;
+    }
+
+    .main-top-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+
+    .pill-light {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 0.82rem;
+      padding: 7px 13px;
+      border-radius: 999px;
+      background: rgba(20, 14, 10, 0.85);
+      border: 1px solid rgba(215, 191, 144, 0.8);
+      color: #f5ebd8;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 34px;
+    }
+
+    .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--leaf);
+    }
+
+    .btn-primary {
+      padding: 7px 18px;
+      border-radius: 999px;
+      border: 1px solid #e1c78a;
+      background: radial-gradient(circle at top, #f4e7c8 0, #ac854e 60%, #6c4a29 100%);
+      color: #251a0f;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.8);
+      transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease;
+      font-size: 0.88rem;
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 9px 18px rgba(0, 0, 0, 0.9);
+      filter: brightness(1.03);
+    }
+
+    .btn-primary:active {
+      transform: translateY(1px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+      filter: brightness(0.97);
+    }
+
+    .paper-panel {
+      flex: 1;
+      margin-top: 4px;
+      border-radius: 12px;
+      background: repeating-linear-gradient(
+        0deg,
+        var(--paper),
+        var(--paper) 32px,
+        var(--paper-alt) 32px,
+        var(--paper-alt) 64px
+      );
+      box-shadow: var(--shadow-soft);
+      border: 1px solid rgba(180, 147, 96, 0.7);
+      padding: 12px 14px 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .paper-panel::before,
+    .paper-panel::after {
+      content: "";
+      position: absolute;
+      inset: 6px 10px auto 10px;
+      height: 1px;
+      background: linear-gradient(
+        to right,
+        transparent,
+        rgba(159, 128, 84, 0.8),
+        transparent
+      );
+    }
+    .paper-panel::after {
+      inset: auto 10px 6px 10px;
+    }
+
+    .paper-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      font-size: 0.8rem;
+      color: var(--ink-soft);
+      font-family: "Nunito", system-ui, sans-serif;
+    }
+
+    .paper-header-title {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-weight: 600;
+    }
+
+    .paper-header-filters {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .filter-chip {
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(152, 126, 85, 0.9);
+      background: rgba(252, 245, 231, 0.8);
+      font-size: 0.75rem;
+      color: var(--ink-soft);
+      font-family: "Nunito", system-ui, sans-serif;
+    }
+
+    .filter-chip.main {
+      background: rgba(177, 138, 87, 0.16);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .books-grid {
+      position: relative;
+      z-index: 1;
+      margin-top: 8px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    /* FICHAS DE LIVRO */
+
+    .book-card {
+      background: var(--card);
+      border-radius: 8px;
+      border: 1px solid rgba(165, 138, 97, 0.9);
+      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4);
+      position: relative;
+      overflow: hidden;
+      padding: 9px 9px 8px;
+    }
+
+    /* borda superior mais escura, tipo ficha */
+    .book-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to bottom, rgba(158, 124, 78, 0.35), transparent 26%);
+      pointer-events: none;
+    }
+
+    .book-card-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .book-card-header {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .book-cover-wrapper {
+      width: 44px;
+      height: 60px;
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.55);
+      flex-shrink: 0;
+      background: linear-gradient(180deg, #c1a27b, #8d6540);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      color: #fdf6e8;
+      text-align: center;
+      padding: 4px;
+    }
+
+    .book-cover-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .book-title {
+      font-size: 0.94rem;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .book-author {
+      font-size: 0.82rem;
+      color: var(--ink-soft);
+    }
+
+    .book-meta {
+      margin-top: 3px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 0.78rem;
+      align-items: center;
+      font-family: "Nunito", system-ui, sans-serif;
+    }
+
+    .badge-status {
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: rgba(101, 123, 96, 0.16);
+      color: #354232;
+      border: 1px solid rgba(101, 123, 96, 0.6);
+    }
+
+    .rating {
+      color: #d28d3e;
+      font-size: 0.8rem;
+    }
+
+    .book-note {
+      font-size: 0.8rem;
+      color: var(--ink-soft);
+      font-family: "Nunito", system-ui, sans-serif;
+    }
+
+    .btn-remove {
+      position: absolute;
+      top: 5px;
+      right: 6px;
+      border: none;
+      background: rgba(238, 214, 208, 0.98);
+      color: var(--danger);
+      font-size: 0.72rem;
+      padding: 2px 7px;
+      border-radius: 999px;
+      cursor: pointer;
+      z-index: 2;
+      font-family: "Nunito", system-ui, sans-serif;
+    }
+
+    footer {
+      margin-top: 6px;
+      font-size: 0.75rem;
+      color: #d2c4aa;
+      text-align: right;
+      padding: 0 4px 2px;
+      font-family: "Nunito", system-ui, sans-serif;
+    }
+
+    /* ===================== MODAL ===================== */
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(8, 4, 2, 0.75);
+      z-index: 20;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal {
+      background: radial-gradient(circle at top, #f7edd9 0, #e6d4b8 55%, #d4c2a4 100%);
+      border-radius: 10px;
+      padding: 12px 14px 10px;
+      width: 100%;
+      max-width: 430px;
+      border: 1px solid rgba(135, 106, 71, 0.85);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.85);
+    }
+
+    .modal header {
+      padding: 0 0 5px;
+      margin-bottom: 7px;
+      border-bottom: 1px solid rgba(135, 106, 71, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title {
+      font-family: "Playfair Display", serif;
+      font-size: 1.1rem;
+      color: var(--ink);
+    }
+
+    .modal-sub {
+      font-size: 0.78rem;
+      color: var(--ink-soft);
+      margin-top: 2px;
+      font-family: "Nunito", system-ui, sans-serif;
+    }
+
+    .btn-close {
+      border: none;
+      background: transparent;
+      font-size: 1.1rem;
+      padding: 2px;
+      cursor: pointer;
+      color: var(--ink-soft);
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      margin-bottom: 8px;
+      font-size: 0.86rem;
+      font-family: "Nunito", system-ui, sans-serif;
+    }
+
+    .form-group label {
+      color: var(--ink-soft);
+      font-weight: 600;
+      font-size: 0.82rem;
+    }
+
+    .form-group small {
+      font-size: 0.74rem;
+      color: var(--ink-soft);
+      opacity: 0.9;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      font-family: inherit;
+      font-size: 0.88rem;
+      padding: 6px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border-soft);
+      background: rgba(251, 246, 233, 0.98);
+      outline: none;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(177, 138, 87, 0.3);
+    }
+
+    .form-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+    }
+
+    .modal-footer {
+      margin-top: 6px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      font-family: "Nunito", system-ui, sans-serif;
+    }
+
+    .btn-secondary {
+      border-radius: 999px;
+      padding: 6px 13px;
+      border: 1px solid var(--border-soft);
+      background: #e1d1b6;
+      font-size: 0.85rem;
+      cursor: pointer;
+      color: var(--ink-soft);
+      min-height: 30px;
+    }
+
+    .btn-secondary:hover {
+      background: #d6c4a4;
+    }
+
+    .btn-tiny {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.75rem;
+      padding: 3px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(135, 106, 71, 0.8);
+      background: #e7d6b8;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    .cover-preview {
+      width: 58px;
+      height: 78px;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid var(--border-soft);
+      background: repeating-linear-gradient(
+        90deg,
+        #e9dec4,
+        #e9dec4 6px,
+        #dfd1b3 6px,
+        #dfd1b3 12px
+      );
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      color: var(--ink-soft);
+    }
+
+    .cover-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    #books-count {
+      font-family: "Nunito", system-ui, sans-serif;
+    }
+
+    @media (max-width: 980px) {
+      .page-shell {
+        grid-template-columns: 220px minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 780px) {
+      body {
+        padding: 8px;
+        align-items: stretch;
+      }
+      .page-shell {
+        max-height: none;
+        grid-template-columns: 1fr;
+      }
+      .library-sidebar {
+        flex-direction: row;
+        align-items: center;
+        padding: 10px 14px;
+      }
+      .sidebar-top {
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+      }
+      .brand-header {
+        flex-direction: row;
+        text-align: left;
+      }
+      .brand-logo-wrap {
+        width: 70px;
+        height: 70px;
+      }
+      .sidebar-bottom {
+        border-top: none;
+        padding-top: 0;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .main-top {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .main-top-right {
+        align-items: flex-start;
+      }
+      .paper-panel {
+        margin-top: 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <script>
+  // Registro do Service Worker (deixa o site com cara de app)
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker
+        .register('./sw.js')
+        .catch(err => console.error('Erro ao registrar service worker:', err));
+    });
+  }
+</script>
+
+  <div class="page-shell">
+    <!-- SIDEBAR -->
+    <aside class="library-sidebar">
+      <div class="sidebar-top">
+        <div class="brand-header">
+          <div class="brand-logo-wrap">
+            <!-- Coloque aqui o arquivo da sua logo -->
+            <img src="logo-entre-cha-e-livros.png" alt="Entre Chá e Livros">
+          </div>
+          <div>
+            <div class="brand-name">Entre Chá e Livros</div>
+            <div class="brand-sub">Arquivo pessoal de leituras & lembranças</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="sidebar-divider"></div>
+          <div class="sidebar-section-title">catálogo</div>
+          <ul class="nav-list">
+            <li class="nav-item">
+              <span>📚 Estante completa</span>
+              <span class="nav-pill">tudo</span>
+            </li>
+            <li class="nav-item">
+              <span>📖 Leituras em andamento</span>
+              <span class="nav-pill">lendo</span>
+            </li>
+            <li class="nav-item">
+              <span>✅ Lidos</span>
+              <span class="nav-pill">feito</span>
+            </li>
+            <li class="nav-item">
+              <span>⭐ Desejos</span>
+              <span class="nav-pill">quero ler</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="sidebar-bottom">
+        <strong>Nota do bibliotecário:</strong><br>
+        A bibliotecária desta casa ensina: livros são grimórios silenciosos. O chá é a chave que desperta seus feitiços.
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-panel">
+      <div class="main-top">
+        <div class="main-top-text">
+          <div class="page-tagline">registro de leituras</div>
+          <div class="page-title">
+            Uma biblioteca <span>antiga</span> para guardar
+            tudo o que os livros já te contaram.
+          </div>
+          <p class="page-subtitle">
+            Use este catálogo para anotar o que leu, o que está lendo e o que ainda
+            quer encontrar nas prateleiras da sua vida.
+          </p>
+        </div>
+
+        <div class="main-top-right">
+          <div class="pill-light">
+            <span class="pill-dot"></span>
+            <span id="books-count">Nenhum livro catalogado ainda.</span>
+          </div>
+          <button class="btn-primary" id="btn-open-modal">+ Catalogar novo livro</button>
+        </div>
+      </div>
+
+      <section class="paper-panel">
+        <div class="paper-header-row">
+          <div class="paper-header-title">fichário de livros</div>
+          <div class="paper-header-filters">
+            <div class="filter-chip main">Todos</div>
+            <div class="filter-chip">Lendo</div>
+            <div class="filter-chip">Lidos</div>
+            <div class="filter-chip">Quero ler</div>
+          </div>
+        </div>
+
+        <div class="books-grid" id="books-grid">
+          <!-- Fichas vão aqui -->
+        </div>
+      </section>
+
+      <footer>
+        Catálogo Entre Chá e Livros – mantido com cuidado, chá quentinho e boas histórias.
+      </footer>
+    </main>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal-backdrop" id="modal-backdrop">
+    <div class="modal">
+      <header>
+        <div>
+          <div class="modal-title">Catalogar novo livro</div>
+          <div class="modal-sub">
+            Você pode buscar dados pela internet ou preencher como uma ficha antiga de biblioteca.
+          </div>
+        </div>
+        <button class="btn-close" id="btn-close-modal">&times;</button>
+      </header>
+
+      <form id="book-form">
+        <div class="form-group">
+          <label for="title">Título do livro *</label>
+          <input type="text" id="title" required placeholder="Ex.: O Pequeno Príncipe" />
+        </div>
+
+        <div class="form-group">
+          <label for="author">Autor(a)</label>
+          <input type="text" id="author" placeholder="Ex.: Antoine de Saint-Exupéry" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="status">Status *</label>
+            <select id="status" required>
+              <option value="lendo">Lendo</option>
+              <option value="lido">Lido</option>
+              <option value="quero-ler">Quero ler</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="rating">Nota (0–5)</label>
+            <input type="number" id="rating" min="0" max="5" step="0.5" placeholder="Ex.: 4.5" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Capa do livro</label>
+          <div style="display:flex; align-items:flex-start; gap:10px; flex-wrap:wrap;">
+            <div class="cover-preview" id="cover-preview">
+              capa
+            </div>
+            <div style="flex:1; min-width:180px;">
+              <input type="file" id="cover-file" accept="image/*" />
+              <small>Escolha uma imagem do seu computador, se quiser personalizar a capa.</small>
+              <button type="button" class="btn-tiny" id="btn-fetch-book">
+                🔍 Buscar capa e autor pelo título
+              </button>
+              <small>Se o livro for encontrado, preencherei autor e capa automaticamente.</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="note">Comentário ou frase favorita</label>
+          <textarea id="note" rows="3" placeholder="Ex.: Um trecho que te marcou ou como o livro te fez sentir."></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" id="btn-cancel">Cancelar</button>
+          <button type="submit" class="btn-primary">Salvar ficha</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "entre_cha_e_livros_books_biblioteca";
+
+    function loadBooks() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return [];
+        return JSON.parse(raw);
+      } catch (e) {
+        console.error("Erro ao carregar livros:", e);
+        return [];
+      }
+    }
+
+    function saveBooks(books) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(books));
+    }
+
+    let books = loadBooks();
+
+    // ficha exemplo se estiver vazio
+    if (books.length === 0) {
+      books = [
+        {
+          id: Date.now(),
+          title: "O Pequeno Príncipe",
+          author: "Antoine de Saint-Exupéry",
+          status: "lido",
+          rating: 5,
+          note: "“Só se vê bem com o coração. O essencial é invisível aos olhos.”",
+          coverUrl: "https://books.google.com/books/content?id=kRNWPgAACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+          coverData: null
+        }
+      ];
+      saveBooks(books);
+    }
+
+    const booksGrid = document.getElementById("books-grid");
+    const booksCount = document.getElementById("books-count");
+
+    function statusLabel(status) {
+      if (status === "lido") return "Lido";
+      if (status === "lendo") return "Lendo";
+      if (status === "quero-ler") return "Quero ler";
+      return status;
+    }
+
+    function ratingStars(r) {
+      if (!r && r !== 0) return "";
+      const full = Math.floor(r);
+      const half = r - full >= 0.5 ? 1 : 0;
+      let stars = "★".repeat(full);
+      if (half) stars += "½";
+      return stars + ` (${r})`;
+    }
+
+    function renderBooks() {
+      booksGrid.innerHTML = "";
+
+      if (books.length === 0) {
+        booksCount.textContent = "Nenhum livro catalogado ainda.";
+        return;
+      }
+
+      booksCount.textContent = `${books.length} livro(s) catalogado(s).`;
+
+      books.forEach(book => {
+        const card = document.createElement("article");
+        card.className = "book-card";
+
+        card.innerHTML = `
+          <button class="btn-remove" data-id="${book.id}" title="Remover ficha">remover</button>
+          <div class="book-card-inner">
+            <div class="book-card-header">
+              <div class="book-cover-wrapper">
+                ${
+                  book.coverData
+                    ? `<img src="${book.coverData}" alt="Capa do livro" class="book-cover-img">`
+                    : book.coverUrl
+                      ? `<img src="${book.coverUrl}" alt="Capa do livro" class="book-cover-img">`
+                      : `<span>📚<br>sem capa</span>`
+                }
+              </div>
+              <div>
+                <div class="book-title">${book.title || "Livro sem título"}</div>
+                <div class="book-author">
+                  ${book.author ? book.author : "<i>Autor(a) não informado</i>"}
+                </div>
+                <div class="book-meta">
+                  <span class="badge-status">${statusLabel(book.status)}</span>
+                  ${book.rating ? `<span class="rating">${ratingStars(book.rating)}</span>` : ""}
+                </div>
+              </div>
+            </div>
+            ${
+              book.note
+                ? `<p class="book-note">${book.note}</p>`
+                : `<p class="book-note"><i>Sem comentário ainda. Que tal registrar como esse livro te fez sentir?</i></p>`
+            }
+          </div>
+        `;
+
+        booksGrid.appendChild(card);
+      });
+    }
+
+    // ===== MODAL / FORM =====
+    const modalBackdrop = document.getElementById("modal-backdrop");
+    const btnOpenModal = document.getElementById("btn-open-modal");
+    const btnCloseModal = document.getElementById("btn-close-modal");
+    const btnCancel = document.getElementById("btn-cancel");
+    const bookForm = document.getElementById("book-form");
+    const coverFileInput = document.getElementById("cover-file");
+    const coverPreview = document.getElementById("cover-preview");
+    const btnFetchBook = document.getElementById("btn-fetch-book");
+
+    let currentCoverData = null;
+    let currentCoverUrl = null;
+
+    function openModal() {
+      modalBackdrop.style.display = "flex";
+      currentCoverData = null;
+      currentCoverUrl = null;
+      coverPreview.innerHTML = "capa";
+      setTimeout(() => {
+        document.getElementById("title").focus();
+      }, 40);
+    }
+
+    function closeModal() {
+      modalBackdrop.style.display = "none";
+      bookForm.reset();
+      currentCoverData = null;
+      currentCoverUrl = null;
+      coverPreview.innerHTML = "capa";
+    }
+
+    btnOpenModal.addEventListener("click", openModal);
+    btnCloseModal.addEventListener("click", closeModal);
+    btnCancel.addEventListener("click", closeModal);
+
+    modalBackdrop.addEventListener("click", (e) => {
+      if (e.target === modalBackdrop) closeModal();
+    });
+
+    // Upload local
+    coverFileInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) {
+        currentCoverData = null;
+        coverPreview.innerHTML = "capa";
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        currentCoverData = evt.target.result;
+        coverPreview.innerHTML = `<img src="${currentCoverData}" alt="Capa escolhida">`;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Buscar pela API Google Books
+    btnFetchBook.addEventListener("click", async () => {
+      const titleInput = document.getElementById("title");
+      const authorInput = document.getElementById("author");
+      const title = titleInput.value.trim();
+
+      if (!title) {
+        alert("Digite pelo menos o título do livro para buscar.");
+        return;
+      }
+
+      btnFetchBook.disabled = true;
+      btnFetchBook.textContent = "Buscando...";
+      try {
+        const url = `https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(title)}&maxResults=1`;
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error("Erro ao buscar livro.");
+        const data = await resp.json();
+
+        if (!data.items || data.items.length === 0) {
+          alert("Não encontrei esse livro. Tente ajustar o título ou preencha manualmente.");
+        } else {
+          const volume = data.items[0].volumeInfo;
+
+          if (!authorInput.value && volume.authors && volume.authors.length > 0) {
+            authorInput.value = volume.authors.join(", ");
+          }
+
+          if (volume.imageLinks && (volume.imageLinks.thumbnail || volume.imageLinks.smallThumbnail)) {
+            currentCoverUrl = volume.imageLinks.thumbnail || volume.imageLinks.smallThumbnail;
+            currentCoverData = null;
+            coverPreview.innerHTML = `<img src="${currentCoverUrl}" alt="Capa do livro encontrada">`;
+          } else {
+            alert("Livro encontrado, mas sem capa na API. Você pode escolher uma imagem do seu computador.");
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Ops, algo deu errado na busca. Veja sua internet e tente novamente.");
+      } finally {
+        btnFetchBook.disabled = false;
+        btnFetchBook.textContent = "🔍 Buscar capa e autor pelo título";
+      }
+    });
+
+    // Salvar livro
+    bookForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const title = document.getElementById("title").value.trim();
+      const author = document.getElementById("author").value.trim();
+      const status = document.getElementById("status").value;
+      const ratingRaw = document.getElementById("rating").value;
+      const note = document.getElementById("note").value.trim();
+
+      if (!title) {
+        alert("Por favor, preencha pelo menos o título.");
+        return;
+      }
+
+      let rating = null;
+      if (ratingRaw !== "") {
+        const parsed = parseFloat(ratingRaw.replace(",", "."));
+        if (!isNaN(parsed) && parsed >= 0 && parsed <= 5) {
+          rating = parsed;
+        }
+      }
+
+      const newBook = {
+        id: Date.now(),
+        title,
+        author,
+        status,
+        rating,
+        note,
+        coverData: currentCoverData || null,
+        coverUrl: currentCoverUrl || null
+      };
+
+      books.unshift(newBook);
+      saveBooks(books);
+      renderBooks();
+      closeModal();
+    });
+
+    // Remover livro
+    booksGrid.addEventListener("click", (e) => {
+      const btn = e.target.closest(".btn-remove");
+      if (!btn) return;
+      const id = Number(btn.getAttribute("data-id"));
+      const confirmDelete = confirm("Remover esta ficha do catálogo?");
+      if (!confirmDelete) return;
+
+      books = books.filter(b => b.id !== id);
+      saveBooks(books);
+      renderBooks();
+    });
+
+    // Inicializa
+    renderBooks();
+  </script>
+</body>
+</html>
